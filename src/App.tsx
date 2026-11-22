@@ -11,6 +11,7 @@ import { RoadmapView } from './components/RoadmapView';
 import { DialogueView } from './components/DialogueView';
 import { InteractiveLessonView } from './components/InteractiveLessonView';
 import { PinyinChartView } from './components/PinyinChartView';
+import { VocabDictionaryModal } from './components/VocabDictionaryModal';
 import {
   Map,
   BookOpen,
@@ -22,7 +23,8 @@ import {
   Sparkles,
   CheckCircle,
   HelpCircle,
-  Music
+  Music,
+  Search
 } from 'lucide-react';
 
 type TabType = 'roadmap' | 'pinyin' | 'vocab' | 'write' | 'quiz';
@@ -57,6 +59,7 @@ export const App: React.FC = () => {
 
   const [streakDays] = useState<number>(1);
   const [showPwaTip, setShowPwaTip] = useState(false);
+  const [showDictionary, setShowDictionary] = useState(false);
 
   // Get active vocab list based on selected HSK level
   const currentVocabList: VocabWord[] =
@@ -142,7 +145,7 @@ export const App: React.FC = () => {
                     Tiếng Trung
                   </h1>
                   <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.2 rounded-full font-mono border border-red-500/30 shrink-0">
-                    Ải {unlockedLevel}/5
+                    Ải {unlockedLevel}/10
                   </span>
                 </div>
               </div>
@@ -185,23 +188,34 @@ export const App: React.FC = () => {
           {/* HSK 1 - 2 - 3 Level Switcher Pill Bar (When in Vocab or Writing tab) */}
           {(currentTab === 'vocab' || currentTab === 'write') && (
             <div className="mt-2.5 space-y-2">
-              <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800">
-                {(['HSK 1', 'HSK 2', 'HSK 3'] as HskLevelType[]).map((lvl) => (
-                  <button
-                    key={lvl}
-                    onClick={() => {
-                      setSelectedHskLevel(lvl);
-                      setWordIndex(0);
-                    }}
-                    className={`py-1 rounded-lg text-xs font-bold transition ${
-                      selectedHskLevel === lvl
-                        ? 'bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-sm'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    {lvl}
-                  </button>
-                ))}
+              <div className="flex items-center gap-1.5">
+                <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800 flex-1">
+                  {(['HSK 1', 'HSK 2', 'HSK 3'] as HskLevelType[]).map((lvl) => (
+                    <button
+                      key={lvl}
+                      onClick={() => {
+                        setSelectedHskLevel(lvl);
+                        setWordIndex(0);
+                      }}
+                      className={`py-1 rounded-lg text-xs font-bold transition ${
+                        selectedHskLevel === lvl
+                          ? 'bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-sm'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {lvl}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setShowDictionary(true)}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 hover:text-white text-xs font-bold transition active:scale-95 shrink-0"
+                  title="Tra cứu từ điển"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  <span>Tra từ</span>
+                </button>
               </div>
 
               {/* Vocab/Writing quick word picker bar */}
@@ -380,6 +394,16 @@ export const App: React.FC = () => {
           </div>
         </nav>
       )}
+
+      {/* Vocab Dictionary & Search Modal */}
+      <VocabDictionaryModal
+        isOpen={showDictionary}
+        onClose={() => setShowDictionary(false)}
+        vocabList={currentVocabList}
+        masteredIds={masteredWordIds}
+        currentHskLevel={selectedHskLevel}
+        onSelectWord={(newIdx) => setWordIndex(newIdx)}
+      />
     </div>
   );
 };

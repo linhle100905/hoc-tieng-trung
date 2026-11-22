@@ -14,6 +14,7 @@ import {
   Lightbulb
 } from 'lucide-react';
 import { speakChinese, ChineseSpeechRecognizer, isSpeechRecognitionSupported } from '../utils/speech';
+import { soundFx } from '../utils/soundFx';
 import confetti from 'canvas-confetti';
 
 interface InteractiveLessonViewProps {
@@ -139,9 +140,11 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
 
     if (cleanSpoken.includes(cleanTarget) || cleanTarget.includes(cleanSpoken)) {
       setCheckStatus('correct');
+      soundFx.playSuccess();
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
     } else {
       setCheckStatus('wrong');
+      soundFx.playWrong();
     }
   };
 
@@ -156,20 +159,24 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
       const selected = currentExercise.options?.find((o) => o.id === selectedChoiceId);
       if (selected?.isCorrect) {
         setCheckStatus('correct');
+        soundFx.playSuccess();
         confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
         if (currentExercise.audioText) speakChinese(currentExercise.audioText);
       } else {
         setCheckStatus('wrong');
+        soundFx.playWrong();
       }
     } else if (currentExercise.type === 'scramble') {
       const answer = selectedWordChips.join('');
       const correct = currentExercise.correctOrder?.join('') || '';
       if (answer === correct) {
         setCheckStatus('correct');
+        soundFx.playSuccess();
         confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
         speakChinese(correct);
       } else {
         setCheckStatus('wrong');
+        soundFx.playWrong();
       }
     }
   };
@@ -179,6 +186,7 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
       setStepIndex((prev) => prev + 1);
     } else {
       setIsFinished(true);
+      soundFx.playLevelUp();
       confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
       onComplete(50);
     }

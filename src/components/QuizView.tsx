@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { VocabWord } from '../data/hsk1';
 import { Volume2, CheckCircle2, XCircle, RotateCcw, Trophy, Sparkles } from 'lucide-react';
 import { speakChinese } from '../utils/speech';
+import { soundFx } from '../utils/soundFx';
 import confetti from 'canvas-confetti';
 
 interface QuizViewProps {
@@ -43,12 +44,15 @@ export const QuizView: React.FC<QuizViewProps> = ({ vocabList, onScoreEarned }) 
     if (optionId === currentWord.id) {
       setScore((prev) => prev + 10);
       onScoreEarned(10);
+      soundFx.playSuccess();
       confetti({
         particleCount: 40,
         spread: 60,
         origin: { y: 0.6 }
       });
       speakChinese(currentWord.hanzi);
+    } else {
+      soundFx.playWrong();
     }
   };
 
@@ -58,6 +62,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ vocabList, onScoreEarned }) 
       setCurrentIndex((prev) => prev + 1);
     } else {
       setQuizFinished(true);
+      soundFx.playLevelUp();
       confetti({
         particleCount: 100,
         spread: 90,

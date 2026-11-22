@@ -1403,11 +1403,24 @@ export const LEVEL_5_LESSON: InteractiveLesson = {
   ]
 };
 
-// Map chứa toàn bộ bài học tương tác của cả 5 Ải (Mỗi ải trọn vẹn 25 câu)
+import {
+  LEVEL_6_LESSON,
+  LEVEL_7_LESSON,
+  LEVEL_8_LESSON,
+  LEVEL_9_LESSON,
+  LEVEL_10_LESSON
+} from './lessonExercisesMore';
+
+// Map chứa toàn bộ bài học tương tác của cả 10 Ải (Mỗi ải trọn vẹn 25 câu = 250 câu tương tác)
 export const ALL_INTERACTIVE_LESSONS: Record<number, InteractiveLesson> = {
   1: LEVEL_1_LESSON,
   2: LEVEL_2_LESSON,
   3: LEVEL_3_LESSON,
   4: LEVEL_4_LESSON,
-  5: LEVEL_5_LESSON
+  5: LEVEL_5_LESSON,
+  6: LEVEL_6_LESSON,
+  7: LEVEL_7_LESSON,
+  8: LEVEL_8_LESSON,
+  9: LEVEL_9_LESSON,
+  10: LEVEL_10_LESSON
 };

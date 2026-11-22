@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import HanziWriter from 'hanzi-writer';
 import { Play, RotateCcw, PenTool, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { soundFx } from '../utils/soundFx';
 
 interface HanziWriterProps {
   character: string;
@@ -22,9 +23,20 @@ export const HanziWriterCard: React.FC<HanziWriterProps> = ({
   const [quizComplete, setQuizComplete] = useState(false);
   const [mistakes, setMistakes] = useState(0);
 
-  // Initialize or re-create HanziWriter when character changes
+  // Extract all Chinese characters from string (e.g. "中国" -> ["中", "国"])
+  const charList = character.split('').filter((c) => /[\u4e00-\u9fa5]/.test(c));
+  const [selectedCharIndex, setSelectedCharIndex] = useState(0);
+
+  // Reset selected char index if word changes
   useEffect(() => {
-    if (!containerRef.current || !character) return;
+    setSelectedCharIndex(0);
+  }, [character]);
+
+  const activeChar = charList[selectedCharIndex] || charList[0] || character[0] || '你';
+
+  // Initialize or re-create HanziWriter when activeChar changes
+  useEffect(() => {
+    if (!containerRef.current || !activeChar) return;
 
     // Clear previous SVG
     containerRef.current.innerHTML = '';
@@ -32,11 +44,8 @@ export const HanziWriterCard: React.FC<HanziWriterProps> = ({
     setMistakes(0);
     setMode('view');
 
-    // Only render the first character if it's a compound word
-    const singleChar = character[0];
-
     try {
-      writerRef.current = HanziWriter.create(containerRef.current, singleChar, {
+      writerRef.current = HanziWriter.create(containerRef.current, activeChar, {
         width: 220,
         height: 220,
         padding: 15,
@@ -62,7 +71,7 @@ export const HanziWriterCard: React.FC<HanziWriterProps> = ({
         writerRef.current.cancelQuiz?.();
       }
     };
-  }, [character]);
+  }, [activeChar]);
 
   const handleAnimate = () => {
     if (!writerRef.current) return;
@@ -80,9 +89,11 @@ export const HanziWriterCard: React.FC<HanziWriterProps> = ({
     writerRef.current.quiz({
       onMistake: (_strokeData: any) => {
         setMistakes((prev) => prev + 1);
+        soundFx.playWrong();
       },
       onComplete: (summary: any) => {
         setQuizComplete(true);
+        soundFx.playSuccess();
         confetti({
           particleCount: 50,
           spread: 60,
@@ -102,7 +113,7 @@ export const HanziWriterCard: React.FC<HanziWriterProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center bg-slate-800/80 backdrop-blur border border-slate-700/60 rounded-3xl p-5 shadow-2xl">
+    <div className="flex flex-col items-center bg-slate-800/80 backdrop-blur border border-slate-700/60 rounded-3xl p-5 shadow-2xl w-full max-w-sm mx-auto">
       {/* Header Info */}
       <div className="text-center mb-3">
         <div className="flex items-center justify-center gap-2">
@@ -113,6 +124,28 @@ export const HanziWriterCard: React.FC<HanziWriterProps> = ({
         </div>
         <p className="text-sm text-slate-300 mt-0.5">{meaning}</p>
       </div>
+
+      {/* Multi-character selector (nếu từ có nhiều hơn 1 chữ Hán như 中国, 谢谢, 再见...) */}
+      {charList.length > 1 && (
+        <div className="flex items-center justify-center gap-2 mb-3 bg-slate-900/90 px-3 py-1.5 rounded-2xl border border-slate-700">
+          <span className="text-[11px] text-slate-400 font-medium">Chọn chữ tập viết:</span>
+          <div className="flex gap-1.5">
+            {charList.map((ch, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedCharIndex(idx)}
+                className={`w-8 h-8 rounded-xl text-base font-chinese font-bold transition active:scale-95 flex items-center justify-center ${
+                  selectedCharIndex === idx
+                    ? 'bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-md shadow-red-500/30 scale-105'
+                    : 'bg-slate-800 text-slate-400 hover:text-white'
+                }`}
+              >
+                {ch}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Grid Drawing Canvas Area */}
       <div className="relative p-2 bg-slate-900/90 rounded-2xl border-2 border-slate-700 shadow-inner flex items-center justify-center">
@@ -133,69 +166,63 @@ export const HanziWriterCard: React.FC<HanziWriterProps> = ({
         {quizComplete && (
           <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center z-20 animate-fade-in p-4 text-center">
             <CheckCircle2 className="w-12 h-12 text-green-400 mb-2 animate-bounce" />
-            <h4 className="text-lg font-bold text-white">Viết rất đẹp!</h4>
+            <h3 className="text-lg font-bold text-white font-chinese">Chữ "{activeChar}" hoàn thành!</h3>
             <p className="text-xs text-slate-300 mt-1">
-              {mistakes === 0 ? 'Xuất sắc! Đúng 100% nét bút thuận.' : `Hoàn thành với ${mistakes} lần sửa nét.`}
+              {mistakes === 0
+                ? 'Tuyệt đỉnh! Viết chuẩn không sai nét nào.'
+                : `Rất tốt! Bạn sai ${mistakes} nét.`}
             </p>
             <button
               onClick={handleStartQuiz}
-              className="mt-3 px-4 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs font-semibold shadow-lg shadow-green-500/30 transition active:scale-95"
+              className="mt-3 px-4 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded-xl text-xs font-bold transition active:scale-95"
             >
-              Tập viết lại
+              Viết lại
             </button>
           </div>
         )}
       </div>
 
-      {/* Helper instruction */}
-      <p className="text-xs text-slate-400 mt-3 flex items-center gap-1.5">
-        {mode === 'view' ? (
-          <>
-            <span className="w-2 h-2 rounded-full bg-red-400 animate-ping inline-block" />
-            Đang hiển thị mẫu thứ tự nét chuẩn
-          </>
-        ) : (
-          <>
-            <PenTool className="w-3.5 h-3.5 text-green-400" />
-            Dùng ngón tay / chuột tô theo chữ trên ô
-          </>
-        )}
-      </p>
-
-      {/* Interactive Control Buttons */}
-      <div className="grid grid-cols-3 gap-2 w-full mt-4">
+      {/* Control Buttons */}
+      <div className="flex items-center gap-2.5 mt-4 w-full">
         <button
           onClick={handleAnimate}
-          className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-medium text-xs transition active:scale-95 ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 ${
             mode === 'view'
-              ? 'bg-red-500/20 text-red-300 border border-red-500/40'
-              : 'bg-slate-700/60 hover:bg-slate-700 text-slate-300'
+              ? 'bg-red-600 text-white shadow-red-600/30'
+              : 'bg-slate-700/80 text-slate-300 hover:bg-slate-700'
           }`}
         >
-          <Play className="w-3.5 h-3.5" />
-          Xem nét
+          <Play className="w-4 h-4 fill-current" />
+          Xem mẫu
         </button>
 
         <button
           onClick={handleStartQuiz}
-          className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-medium text-xs transition active:scale-95 ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 ${
             mode === 'quiz'
-              ? 'bg-green-500 text-white shadow-lg shadow-green-500/30 font-bold'
-              : 'bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/40'
+              ? 'bg-amber-600 text-white shadow-amber-600/30'
+              : 'bg-slate-700/80 text-slate-300 hover:bg-slate-700'
           }`}
         >
-          <PenTool className="w-3.5 h-3.5" />
-          Tự viết
+          <PenTool className="w-4 h-4" />
+          Tập viết
         </button>
 
         <button
           onClick={handleReset}
-          className="flex items-center justify-center gap-1.5 py-2.5 bg-slate-700/60 hover:bg-slate-700 text-slate-300 rounded-xl font-medium text-xs transition active:scale-95"
+          className="p-2.5 rounded-2xl bg-slate-700/80 hover:bg-slate-700 text-slate-300 transition active:scale-95"
+          title="Vẽ lại"
         >
-          <RotateCcw className="w-3.5 h-3.5" />
-          Làm lại
+          <RotateCcw className="w-4 h-4" />
         </button>
       </div>
+
+      {/* Instructions */}
+      <p className="text-[11px] text-slate-400 mt-3 text-center">
+        {mode === 'quiz'
+          ? '👆 Dùng ngón tay vẽ từng nét theo thứ tự bút thuận'
+          : '👀 Quan sát thứ tự các nét bút thuận và hướng vẽ'}
+      </p>
     </div>
   );
 };
