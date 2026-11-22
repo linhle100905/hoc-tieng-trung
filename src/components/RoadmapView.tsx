@@ -16,7 +16,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({
   const [selectedPreview, setSelectedPreview] = useState<LearningLevel | null>(null);
 
   return (
-    <div className="relative py-4 px-2 flex flex-col items-center">
+    <div className="relative pt-6 pb-12 px-2 flex flex-col items-center">
       {/* Roadmap Title Banner */}
       <div className="w-full text-center mb-6">
         <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">

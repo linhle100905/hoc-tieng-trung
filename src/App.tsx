@@ -22,8 +22,7 @@ import {
   Sparkles,
   CheckCircle,
   HelpCircle,
-  Music,
-  Layers
+  Music
 } from 'lucide-react';
 
 type TabType = 'roadmap' | 'pinyin' | 'vocab' | 'write' | 'quiz';
@@ -128,39 +127,39 @@ export const App: React.FC = () => {
 
   return (
     <div className="h-[100dvh] h-screen bg-slate-950 text-slate-100 flex flex-col max-w-md mx-auto relative shadow-2xl overflow-hidden border-x border-slate-800 select-none">
-      {/* TOP HEADER: CỐ ĐỊNH 100% Ở ĐỈNH */}
+      {/* TOP HEADER: TỰ ĐỘNG CHỐNG TRÀN VÀ TRÁNH TAI THỎ / DYNAMIC ISLAND IPHONE */}
       {!isFullScreenLesson && (
-        <header className="shrink-0 px-4 pt-3 pb-2.5 bg-slate-900/95 backdrop-blur z-30 border-b border-slate-800/90 shadow-md">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center font-bold text-lg text-white shadow-lg shadow-red-500/20">
+        <header className="shrink-0 px-4 safe-area-header pb-3 bg-slate-900/98 backdrop-blur z-30 border-b border-slate-800 shadow-md">
+          <div className="flex items-center justify-between gap-2">
+            {/* Logo & Brand */}
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center font-bold text-base text-white shadow-md shadow-red-500/20 shrink-0">
                 中
               </div>
-              <div>
-                <h1 className="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
-                  Tiếng Trung HSK
-                  <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded-full font-mono border border-red-500/30">
-                    Ải {unlockedLevel}/{CONVERSATION_LEVELS.length}
+              <div className="truncate">
+                <div className="flex items-center gap-1.5">
+                  <h1 className="text-sm font-bold tracking-tight text-white truncate">
+                    Tiếng Trung
+                  </h1>
+                  <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.2 rounded-full font-mono border border-red-500/30 shrink-0">
+                    Ải {unlockedLevel}/5
                   </span>
-                </h1>
-                <p className="text-[11px] text-slate-400">HSK 1 • HSK 2 • HSK 3</p>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              {/* Streak */}
+            {/* Stats badges: Streak, XP, Help */}
+            <div className="flex items-center gap-1.5 shrink-0">
               <div className="flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-xl text-amber-400 text-xs font-bold">
                 <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500 animate-pulse" />
                 <span>{streakDays}</span>
               </div>
 
-              {/* XP */}
               <div className="flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/30 px-2 py-1 rounded-xl text-emerald-400 text-xs font-bold">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>{totalXp} XP</span>
+                <span>{totalXp}</span>
               </div>
 
-              {/* Info tooltip */}
               <button
                 onClick={() => setShowPwaTip(!showPwaTip)}
                 className="p-1 text-slate-400 hover:text-white"
@@ -178,7 +177,7 @@ export const App: React.FC = () => {
                 📱 Cài app vào màn hình iPhone / Android:
               </p>
               <p className="text-[11px] text-slate-300 leading-relaxed">
-                Mở link bằng <strong>Safari</strong> $\rightarrow$ Bấm <strong>Chia sẻ (Share)</strong> $\rightarrow$ Chọn <strong>"Thêm vào Màn hình chính" (Add to Home Screen)</strong> là có ngay app độc lập không cần laptop!
+                Mở link bằng <strong>Safari</strong> $\rightarrow$ Bấm <strong>Chia sẻ (Share)</strong> $\rightarrow$ Chọn <strong>"Thêm vào Màn hình chính"</strong> là có ngay app độc lập không cần laptop!
               </p>
             </div>
           )}
@@ -253,7 +252,7 @@ export const App: React.FC = () => {
       )}
 
       {/* KHU VỰC NỘI DUNG: CHỈ DUY NHẤT VÙNG NÀY ĐƯỢC CUỘN */}
-      <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden smooth-scroll px-4 py-3 flex flex-col">
+      <main className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden smooth-scroll px-4 py-3 flex flex-col ${isFullScreenLesson ? 'safe-area-header safe-area-bottom' : ''}`}>
         {/* Interactive Duolingo Lesson Mode */}
         {activeInteractiveLesson ? (
           <InteractiveLessonView
@@ -315,9 +314,9 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* BOTTOM NAVIGATION BAR (5 TABS): CỐ ĐỊNH 100% Ở ĐÁY */}
+      {/* BOTTOM NAVIGATION BAR: NẰM AN TOÀN PHÍA TRÊN THANH HOME CỦA IPHONE */}
       {!isFullScreenLesson && (
-        <nav className="shrink-0 bg-slate-900/98 backdrop-blur border-t border-slate-800/90 px-2 py-2 z-30 shadow-lg">
+        <nav className="shrink-0 bg-slate-900/98 backdrop-blur border-t border-slate-800/90 px-2 pt-2 safe-area-bottom z-30 shadow-lg">
           <div className="grid grid-cols-5 gap-1">
             <button
               onClick={() => setCurrentTab('roadmap')}
