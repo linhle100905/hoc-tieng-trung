@@ -118,14 +118,13 @@ export const App: React.FC = () => {
     }
   };
 
-  // Determine if in fullscreen learning mode
   const isFullScreenLesson = activeInteractiveLesson !== null || activeDialogueLevel !== null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between max-w-md mx-auto relative shadow-2xl overflow-hidden border-x border-slate-800">
-      {/* TOP HEADER */}
+    <div className="h-[100dvh] h-screen bg-slate-950 text-slate-100 flex flex-col max-w-md mx-auto relative shadow-2xl overflow-hidden border-x border-slate-800 select-none">
+      {/* TOP HEADER: CỐ ĐỊNH 100% Ở ĐỈNH, KHÔNG BỊ TRƯỢT KHI CUỘN NỘI DUNG */}
       {!isFullScreenLesson && (
-        <header className="px-4 pt-4 pb-3 bg-slate-900/90 backdrop-blur sticky top-0 z-30 border-b border-slate-800/80">
+        <header className="shrink-0 px-4 pt-3 pb-2.5 bg-slate-900/95 backdrop-blur z-30 border-b border-slate-800/90 shadow-md">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center font-bold text-lg text-white shadow-lg shadow-red-500/20">
@@ -180,7 +179,7 @@ export const App: React.FC = () => {
 
           {/* Vocab/Writing quick picker bar */}
           {(currentTab === 'vocab' || currentTab === 'write') && (
-            <div className="mt-3 flex items-center justify-between bg-slate-950/60 p-1.5 rounded-2xl border border-slate-800">
+            <div className="mt-2.5 flex items-center justify-between bg-slate-950/60 p-1.5 rounded-2xl border border-slate-800">
               <button
                 onClick={handlePrevWord}
                 className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition active:scale-95"
@@ -225,8 +224,8 @@ export const App: React.FC = () => {
         </header>
       )}
 
-      {/* MAIN VIEWPORT */}
-      <main className="flex-1 px-4 py-4 flex flex-col justify-center overflow-y-auto">
+      {/* KHU VỰC NỘI DUNG: CHỈ DUY NHẤT VÙNG NÀY ĐƯỢC PHÉP CUỘN (SCROLL) */}
+      <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden smooth-scroll px-4 py-3 flex flex-col">
         {/* Interactive Duolingo Lesson Mode */}
         {activeInteractiveLesson ? (
           <InteractiveLessonView
@@ -243,7 +242,7 @@ export const App: React.FC = () => {
           />
         ) : (
           /* Standard 5 Tabs */
-          <>
+          <div className="flex-1 flex flex-col justify-center">
             {currentTab === 'roadmap' && (
               <RoadmapView
                 unlockedLevel={unlockedLevel}
@@ -284,13 +283,13 @@ export const App: React.FC = () => {
                 onScoreEarned={handleScoreEarned}
               />
             )}
-          </>
+          </div>
         )}
       </main>
 
-      {/* BOTTOM NAVIGATION BAR (5 TABS) */}
+      {/* BOTTOM NAVIGATION BAR: CỐ ĐỊNH 100% Ở ĐÁY, KHÔNG BAO GIỜ BỊ CUỘN TRÔI */}
       {!isFullScreenLesson && (
-        <nav className="bg-slate-900/95 backdrop-blur border-t border-slate-800/90 px-2 py-2 sticky bottom-0 z-30">
+        <nav className="shrink-0 bg-slate-900/98 backdrop-blur border-t border-slate-800/90 px-2 py-2 z-30 shadow-lg">
           <div className="grid grid-cols-5 gap-1">
             <button
               onClick={() => setCurrentTab('roadmap')}
