@@ -8,6 +8,7 @@ import { QuizView } from './components/QuizView';
 import { RoadmapView } from './components/RoadmapView';
 import { DialogueView } from './components/DialogueView';
 import { InteractiveLessonView } from './components/InteractiveLessonView';
+import { PinyinChartView } from './components/PinyinChartView';
 import {
   Map,
   BookOpen,
@@ -18,10 +19,11 @@ import {
   ChevronRight,
   Sparkles,
   CheckCircle,
-  HelpCircle
+  HelpCircle,
+  Music
 } from 'lucide-react';
 
-type TabType = 'roadmap' | 'vocab' | 'write' | 'quiz';
+type TabType = 'roadmap' | 'pinyin' | 'vocab' | 'write' | 'quiz';
 
 export const App: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<TabType>('roadmap');
@@ -121,7 +123,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between max-w-md mx-auto relative shadow-2xl overflow-hidden border-x border-slate-800">
-      {/* TOP HEADER (Hidden when in Duolingo interactive lesson to maximize focus) */}
+      {/* TOP HEADER */}
       {!isFullScreenLesson && (
         <header className="px-4 pt-4 pb-3 bg-slate-900/90 backdrop-blur sticky top-0 z-30 border-b border-slate-800/80">
           <div className="flex items-center justify-between">
@@ -136,7 +138,7 @@ export const App: React.FC = () => {
                     Ải {unlockedLevel}/{CONVERSATION_LEVELS.length}
                   </span>
                 </h1>
-                <p className="text-[11px] text-slate-400">Tự tay học & vượt từng ải bài tập</p>
+                <p className="text-[11px] text-slate-400">Lộ trình 25 câu tương tác/ải</p>
               </div>
             </div>
 
@@ -153,11 +155,11 @@ export const App: React.FC = () => {
                 <span>{totalXp} XP</span>
               </div>
 
-              {/* Info tooltip button */}
+              {/* Info tooltip */}
               <button
                 onClick={() => setShowPwaTip(!showPwaTip)}
                 className="p-1 text-slate-400 hover:text-white"
-                title="Hướng dẫn cài app"
+                title="Hướng dẫn"
               >
                 <HelpCircle className="w-4 h-4" />
               </button>
@@ -240,7 +242,7 @@ export const App: React.FC = () => {
             onLevelCompleted={handleDialogueCompleted}
           />
         ) : (
-          /* Standard Tabs */
+          /* Standard 5 Tabs */
           <>
             {currentTab === 'roadmap' && (
               <RoadmapView
@@ -253,6 +255,10 @@ export const App: React.FC = () => {
                   setActiveDialogueLevel(level);
                 }}
               />
+            )}
+
+            {currentTab === 'pinyin' && (
+              <PinyinChartView />
             )}
 
             {currentTab === 'vocab' && (
@@ -282,10 +288,10 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* BOTTOM NAVIGATION BAR */}
+      {/* BOTTOM NAVIGATION BAR (5 TABS) */}
       {!isFullScreenLesson && (
-        <nav className="bg-slate-900/95 backdrop-blur border-t border-slate-800/90 px-3 py-2 sticky bottom-0 z-30">
-          <div className="grid grid-cols-4 gap-1">
+        <nav className="bg-slate-900/95 backdrop-blur border-t border-slate-800/90 px-2 py-2 sticky bottom-0 z-30">
+          <div className="grid grid-cols-5 gap-1">
             <button
               onClick={() => setCurrentTab('roadmap')}
               className={`flex flex-col items-center py-1.5 rounded-2xl transition active:scale-95 ${
@@ -294,20 +300,32 @@ export const App: React.FC = () => {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Map className="w-5 h-5 mb-0.5" />
-              <span className="text-[11px]">Lộ trình</span>
+              <Map className="w-4 h-4 mb-0.5" />
+              <span className="text-[10px]">Lộ trình</span>
+            </button>
+
+            <button
+              onClick={() => setCurrentTab('pinyin')}
+              className={`flex flex-col items-center py-1.5 rounded-2xl transition active:scale-95 ${
+                currentTab === 'pinyin'
+                  ? 'text-red-400 font-bold bg-red-500/10'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Music className="w-4 h-4 mb-0.5" />
+              <span className="text-[10px]">Pinyin</span>
             </button>
 
             <button
               onClick={() => setCurrentTab('vocab')}
               className={`flex flex-col items-center py-1.5 rounded-2xl transition active:scale-95 ${
                 currentTab === 'vocab'
-                  ? 'text-red-400 font-bold bg-red-500/10'
+                  ? 'text-blue-400 font-bold bg-blue-500/10'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <BookOpen className="w-5 h-5 mb-0.5" />
-              <span className="text-[11px]">Từ vựng</span>
+              <BookOpen className="w-4 h-4 mb-0.5" />
+              <span className="text-[10px]">Từ vựng</span>
             </button>
 
             <button
@@ -318,8 +336,8 @@ export const App: React.FC = () => {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <PenTool className="w-5 h-5 mb-0.5" />
-              <span className="text-[11px]">Tập viết</span>
+              <PenTool className="w-4 h-4 mb-0.5" />
+              <span className="text-[10px]">Tập viết</span>
             </button>
 
             <button
@@ -330,8 +348,8 @@ export const App: React.FC = () => {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Award className="w-5 h-5 mb-0.5" />
-              <span className="text-[11px]">Ôn tập</span>
+              <Award className="w-4 h-4 mb-0.5" />
+              <span className="text-[10px]">Ôn tập</span>
             </button>
           </div>
         </nav>
