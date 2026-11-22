@@ -155,7 +155,8 @@ export const PINYIN_TONES = [
     symbol: "—",
     pitch: "55 (Cao bằng)",
     guide: "Cao, ngân dài và phẳng đều, không lên không xuống.",
-    example: "mā (妈 - Mẹ)"
+    example: "mā (妈 - Mẹ)",
+    soundHanzi: "妈"
   },
   {
     toneNumber: 2,
@@ -164,7 +165,8 @@ export const PINYIN_TONES = [
     symbol: "／",
     pitch: "35 (Đi lên)",
     guide: "Bắt đầu từ mức trung bình rồi vút lên cao như dấu sắc tiếng Việt.",
-    example: "má (麻 - Vừng/Gai)"
+    example: "má (麻 - Vừng/Gai)",
+    soundHanzi: "麻"
   },
   {
     toneNumber: 3,
@@ -173,7 +175,8 @@ export const PINYIN_TONES = [
     symbol: "∨",
     pitch: "214 (Lượn sóng)",
     guide: "Hạ giọng xuống trầm rồi hơi vểnh lên như dấu hỏi trầm.",
-    example: "mǎ (马 - Con ngựa)"
+    example: "mǎ (马 - Con ngựa)",
+    soundHanzi: "马"
   },
   {
     toneNumber: 4,
@@ -182,6 +185,7 @@ export const PINYIN_TONES = [
     symbol: "＼",
     pitch: "51 (Rơi dứt khoát)",
     guide: "Hạ từ đỉnh cao nhất rơi dứt khoát xuống đáy, mạnh mẽ như ra lệnh.",
-    example: "mà (骂 - Mắng mỏ)"
+    example: "mà (骂 - Mắng mỏ)",
+    soundHanzi: "骂"
   }
 ];

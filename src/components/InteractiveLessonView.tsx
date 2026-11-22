@@ -78,9 +78,7 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
     if (checkStatus !== 'idle') return;
     if (chip.used) return;
 
-    // Add to answer
     setSelectedWordChips([...selectedWordChips, chip.text]);
-    // Mark as used
     setAvailableWordChips(
       availableWordChips.map((c) => (c.id === chip.id ? { ...c, used: true } : c))
     );
@@ -93,7 +91,6 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
     const newSelected = selectedWordChips.filter((_, idx) => idx !== indexToRemove);
     setSelectedWordChips(newSelected);
 
-    // Unmark first matching used chip in available
     let unmarked = false;
     setAvailableWordChips(
       availableWordChips.map((c) => {
@@ -197,7 +194,7 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
 
   if (isFinished) {
     return (
-      <div className="flex flex-col items-center justify-center p-6 bg-slate-900 rounded-3xl border border-slate-800 text-center shadow-2xl my-auto animate-fade-in">
+      <div className="flex flex-col items-center justify-center p-6 bg-slate-900 rounded-3xl border border-slate-800 text-center shadow-2xl my-auto animate-fade-in pt-[max(48px,env(safe-area-inset-top,48px))] pb-[max(36px,env(safe-area-inset-bottom,36px))]">
         <div className="w-20 h-20 bg-emerald-500/20 border-2 border-emerald-500/40 rounded-full flex items-center justify-center mb-4">
           <Trophy className="w-10 h-10 text-amber-400 animate-bounce" />
         </div>
@@ -222,12 +219,12 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full justify-between">
-      {/* TOP PROGRESS BAR (DUOLINGO STYLE) */}
-      <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+    <div className="flex flex-col h-full justify-between pt-[max(48px,env(safe-area-inset-top,48px))] pb-[max(36px,env(safe-area-inset-bottom,36px))] px-2">
+      {/* TOP PROGRESS BAR: ĐẨY XUỐNG DƯỚI TAI THỎ / DYNAMIC ISLAND */}
+      <div className="shrink-0 flex items-center gap-3 pb-3 border-b border-slate-800">
         <button
           onClick={onExit}
-          className="p-1 text-slate-400 hover:text-white"
+          className="p-1.5 rounded-xl bg-slate-800/80 text-slate-400 hover:text-white transition active:scale-95"
           title="Thoát bài học"
         >
           <X className="w-5 h-5" />
@@ -240,22 +237,22 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
           />
         </div>
 
-        <span className="text-xs font-mono font-bold text-slate-400">
+        <span className="text-xs font-mono font-bold text-slate-400 shrink-0">
           {stepIndex + 1}/{lesson.exercises.length}
         </span>
       </div>
 
-      {/* EXERCISE CONTENT AREA */}
-      <div className="flex-1 overflow-y-auto py-5 flex flex-col justify-center">
+      {/* EXERCISE CONTENT AREA: CĂN GIỮA THOÁNG ĐÃNG */}
+      <div className="flex-1 min-h-0 overflow-y-auto py-4 flex flex-col justify-center">
         {/* Prompt title */}
-        <h3 className="text-base font-bold text-white mb-4 leading-snug">
+        <h3 className="text-base font-bold text-white mb-3 text-center leading-snug">
           {currentExercise.prompt}
         </h3>
 
         {/* 1. INTRO TYPE (Học từ mới) */}
         {currentExercise.type === 'intro' && (
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl p-6 text-center shadow-xl animate-fade-in">
-            <h1 className="text-7xl font-chinese font-bold text-white mb-2">
+          <div className="bg-slate-900/95 border border-slate-700/80 rounded-3xl p-6 text-center shadow-2xl animate-fade-in w-full max-w-sm mx-auto">
+            <h1 className="text-7xl font-chinese font-bold text-white mb-2 tracking-wider">
               {currentExercise.targetHanzi}
             </h1>
             <div className="flex items-center justify-center gap-2 mb-3">
@@ -264,24 +261,24 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
               </span>
               <button
                 onClick={() => handlePlayAudio(currentExercise.audioText)}
-                className="p-2 rounded-full bg-red-500/20 text-red-400 hover:text-white"
+                className="p-2 rounded-full bg-red-500/20 text-red-400 hover:text-white transition active:scale-95"
               >
                 <Volume2 className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="inline-block bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full text-xs text-amber-300 font-semibold mb-3">
+            <div className="inline-block bg-amber-500/10 border border-amber-500/30 px-3.5 py-1 rounded-full text-xs text-amber-300 font-semibold mb-3">
               Hán Việt: {currentExercise.hanViet}
             </div>
 
-            <p className="text-lg font-semibold text-emerald-400 mb-4">
+            <p className="text-base font-semibold text-emerald-400 mb-4">
               Nghĩa: {currentExercise.targetVietnamese}
             </p>
 
             {currentExercise.tips && (
               <div className="bg-slate-800/80 p-3 rounded-2xl border border-slate-700 text-left text-xs text-slate-300 flex items-start gap-2">
                 <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <span>{currentExercise.tips}</span>
+                <span className="leading-relaxed">{currentExercise.tips}</span>
               </div>
             )}
           </div>
@@ -289,8 +286,7 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
 
         {/* 2. CHOICE & LISTEN TYPE (Trắc nghiệm & Nghe chọn) */}
         {(currentExercise.type === 'choice' || currentExercise.type === 'listen') && (
-          <div className="space-y-3">
-            {/* Audio button for listen exercise */}
+          <div className="space-y-3 w-full max-w-sm mx-auto">
             {currentExercise.type === 'listen' && (
               <div className="flex justify-center mb-4">
                 <button
@@ -349,14 +345,14 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
           </div>
         )}
 
-        {/* 3. SCRAMBLE TYPE (Ghép câu thẻ từ Duolingo - Word Bank) */}
+        {/* 3. SCRAMBLE TYPE (Ghép câu thẻ từ Duolingo) */}
         {currentExercise.type === 'scramble' && (
-          <div className="space-y-6">
+          <div className="space-y-5 w-full max-w-sm mx-auto">
             {/* Vietnamese Target sentence */}
             <div className="bg-slate-900 p-4 rounded-2xl border border-slate-700 flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-400">Câu cần dịch:</p>
-                <p className="text-lg font-bold text-white mt-0.5">
+                <p className="text-base font-bold text-white mt-0.5">
                   "{currentExercise.targetVietnamese}"
                 </p>
               </div>
@@ -388,15 +384,15 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
             </div>
 
             {/* Available Word Bank */}
-            <div className="pt-2">
-              <p className="text-xs text-slate-400 mb-2">Ngân hàng thẻ từ:</p>
-              <div className="flex flex-wrap gap-2.5 justify-center">
+            <div className="pt-1">
+              <p className="text-xs text-slate-400 mb-2 text-center">Ngân hàng thẻ từ:</p>
+              <div className="flex flex-wrap gap-2 justify-center">
                 {availableWordChips.map((chip) => (
                   <button
                     key={chip.id}
                     onClick={() => handleChipClick(chip)}
                     disabled={chip.used || checkStatus !== 'idle'}
-                    className={`px-4 py-2.5 rounded-2xl font-chinese font-bold text-xl border transition-all active:scale-95 shadow-md ${
+                    className={`px-3.5 py-2 rounded-2xl font-chinese font-bold text-lg border transition-all active:scale-95 shadow-md ${
                       chip.used
                         ? 'bg-slate-900/40 border-slate-800 text-slate-700 opacity-40 cursor-not-allowed'
                         : 'bg-slate-800 hover:bg-slate-700 border-slate-600 text-slate-100 hover:border-amber-400'
@@ -412,7 +408,7 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
 
         {/* 4. FILL IN THE BLANK (Điền từ hội thoại) */}
         {currentExercise.type === 'fill' && (
-          <div className="space-y-4">
+          <div className="space-y-4 w-full max-w-sm mx-auto">
             <div className="bg-slate-900 p-4 rounded-2xl border border-slate-700">
               <span className="text-xs text-slate-400">{currentExercise.dialogueContext}</span>
               <div className="mt-2 text-xl font-chinese font-bold text-white flex items-center gap-1">
@@ -453,7 +449,7 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
 
         {/* 5. SPEAK TYPE (Luyện nói) */}
         {currentExercise.type === 'speak' && (
-          <div className="flex flex-col items-center text-center space-y-4">
+          <div className="flex flex-col items-center text-center space-y-4 w-full max-w-sm mx-auto">
             <h1 className="text-6xl font-chinese font-bold text-white">
               {currentExercise.targetHanzi}
             </h1>
@@ -469,7 +465,7 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
               <Volume2 className="w-4 h-4" /> Nghe đọc mẫu
             </button>
 
-            <div className="pt-4 flex flex-col items-center">
+            <div className="pt-3 flex flex-col items-center">
               <button
                 onClick={handleStartMic}
                 disabled={isListeningMic}
@@ -495,11 +491,11 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
         )}
       </div>
 
-      {/* BOTTOM ACTION DRAWER (CLASSIC DUOLINGO RESULT BAR) */}
-      <div className="pt-2">
+      {/* BOTTOM ACTION DRAWER: NẰM CAO HẲN LÊN TRÊN THANH HOME IPHONE */}
+      <div className="shrink-0 pt-2 pb-1">
         {/* Correct Result Banner */}
         {checkStatus === 'correct' && (
-          <div className="p-3.5 mb-2 rounded-2xl bg-emerald-950/90 border border-emerald-500/60 flex items-center justify-between text-emerald-300 animate-fade-in">
+          <div className="p-3.5 mb-2 rounded-2xl bg-emerald-950/90 border border-emerald-500/60 flex items-center justify-between text-emerald-300 animate-fade-in shadow-xl">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0" />
               <div>
@@ -518,7 +514,7 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
 
         {/* Wrong Result Banner */}
         {checkStatus === 'wrong' && (
-          <div className="p-3.5 mb-2 rounded-2xl bg-rose-950/90 border border-rose-500/60 flex items-center justify-between text-rose-300 animate-fade-in">
+          <div className="p-3.5 mb-2 rounded-2xl bg-rose-950/90 border border-rose-500/60 flex items-center justify-between text-rose-300 animate-fade-in shadow-xl">
             <div className="flex items-center gap-2">
               <XCircle className="w-6 h-6 text-rose-400 shrink-0" />
               <div>
@@ -544,7 +540,7 @@ export const InteractiveLessonView: React.FC<InteractiveLessonViewProps> = ({
           <button
             onClick={handleCheck}
             disabled={!canCheck}
-            className={`w-full py-3.5 rounded-2xl font-bold text-sm uppercase tracking-wider transition-all duration-200 active:scale-[0.98] ${
+            className={`w-full py-4 rounded-2xl font-bold text-sm uppercase tracking-wider transition-all duration-200 active:scale-[0.98] ${
               canCheck
                 ? 'bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-500 hover:to-amber-400 text-white shadow-xl shadow-red-500/25'
                 : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'

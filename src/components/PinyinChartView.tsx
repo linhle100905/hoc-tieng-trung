@@ -94,7 +94,13 @@ export const PinyinChartView: React.FC = () => {
                         <p className="text-[11px] text-slate-300 mt-1 leading-snug">
                           {item.vietnameseGuide}
                         </p>
-                        <div className="mt-1.5 pt-1 border-t border-slate-700/50 flex items-center justify-between text-[10px]">
+                        <div 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePlaySound(item.exampleWord);
+                          }}
+                          className="mt-1.5 pt-1 border-t border-slate-700/50 flex items-center justify-between text-[10px] hover:text-amber-300"
+                        >
                           <span className="font-chinese text-amber-200">{item.exampleWord}</span>
                           <span className="text-slate-400">{item.exampleMeaning}</span>
                         </div>
@@ -135,7 +141,13 @@ export const PinyinChartView: React.FC = () => {
                       <p className="text-[11px] text-slate-300 mt-1 leading-snug">
                         {item.vietnameseGuide}
                       </p>
-                      <div className="mt-1.5 pt-1 border-t border-slate-700/50 flex items-center justify-between text-[10px]">
+                      <div 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePlaySound(item.exampleWord);
+                        }}
+                        className="mt-1.5 pt-1 border-t border-slate-700/50 flex items-center justify-between text-[10px] hover:text-amber-300"
+                      >
                         <span className="font-chinese text-amber-200">{item.exampleWord}</span>
                         <span className="text-slate-400">{item.exampleMeaning}</span>
                       </div>
@@ -157,7 +169,7 @@ export const PinyinChartView: React.FC = () => {
             {PINYIN_TONES.map((tone) => (
               <div
                 key={tone.toneNumber}
-                onClick={() => handlePlaySound(tone.example)}
+                onClick={() => handlePlaySound((tone as any).soundHanzi || tone.example)}
                 className="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-4 cursor-pointer transition active:scale-[0.98]"
               >
                 <div className="flex items-center justify-between mb-2">
