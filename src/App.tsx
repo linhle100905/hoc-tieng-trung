@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HSK1_VOCAB, VocabWord } from './data/hsk1';
+import { HSK2_VOCAB } from './data/hsk2';
+import { HSK3_VOCAB } from './data/hsk3';
 import { CONVERSATION_LEVELS, LearningLevel } from './data/conversations';
 import { ALL_INTERACTIVE_LESSONS, InteractiveLesson } from './data/lessonExercises';
 import { Flashcard } from './components/Flashcard';
@@ -20,13 +22,16 @@ import {
   Sparkles,
   CheckCircle,
   HelpCircle,
-  Music
+  Music,
+  Layers
 } from 'lucide-react';
 
 type TabType = 'roadmap' | 'pinyin' | 'vocab' | 'write' | 'quiz';
+type HskLevelType = 'HSK 1' | 'HSK 2' | 'HSK 3';
 
 export const App: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<TabType>('roadmap');
+  const [selectedHskLevel, setSelectedHskLevel] = useState<HskLevelType>('HSK 1');
   
   // Unlocked level progression
   const [unlockedLevel, setUnlockedLevel] = useState<number>(() => {
@@ -39,10 +44,7 @@ export const App: React.FC = () => {
   const [activeDialogueLevel, setActiveDialogueLevel] = useState<LearningLevel | null>(null);
 
   // Vocab card index
-  const [wordIndex, setWordIndex] = useState<number>(() => {
-    const saved = localStorage.getItem('current_word_index');
-    return saved ? parseInt(saved, 10) : 0;
-  });
+  const [wordIndex, setWordIndex] = useState<number>(0);
 
   const [masteredWordIds, setMasteredWordIds] = useState<number[]>(() => {
     const saved = localStorage.getItem('mastered_words');
@@ -57,15 +59,19 @@ export const App: React.FC = () => {
   const [streakDays] = useState<number>(1);
   const [showPwaTip, setShowPwaTip] = useState(false);
 
-  const currentWord: VocabWord = HSK1_VOCAB[wordIndex] || HSK1_VOCAB[0];
+  // Get active vocab list based on selected HSK level
+  const currentVocabList: VocabWord[] =
+    selectedHskLevel === 'HSK 2'
+      ? HSK2_VOCAB
+      : selectedHskLevel === 'HSK 3'
+      ? HSK3_VOCAB
+      : HSK1_VOCAB;
+
+  const currentWord: VocabWord = currentVocabList[wordIndex] || currentVocabList[0];
 
   useEffect(() => {
     localStorage.setItem('unlocked_level', unlockedLevel.toString());
   }, [unlockedLevel]);
-
-  useEffect(() => {
-    localStorage.setItem('current_word_index', wordIndex.toString());
-  }, [wordIndex]);
 
   useEffect(() => {
     localStorage.setItem('mastered_words', JSON.stringify(masteredWordIds));
@@ -76,7 +82,7 @@ export const App: React.FC = () => {
   }, [totalXp]);
 
   const handleNextWord = () => {
-    if (wordIndex < HSK1_VOCAB.length - 1) {
+    if (wordIndex < currentVocabList.length - 1) {
       setWordIndex((prev) => prev + 1);
     } else {
       setWordIndex(0);
@@ -87,7 +93,7 @@ export const App: React.FC = () => {
     if (wordIndex > 0) {
       setWordIndex((prev) => prev - 1);
     } else {
-      setWordIndex(HSK1_VOCAB.length - 1);
+      setWordIndex(currentVocabList.length - 1);
     }
   };
 
@@ -122,7 +128,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="h-[100dvh] h-screen bg-slate-950 text-slate-100 flex flex-col max-w-md mx-auto relative shadow-2xl overflow-hidden border-x border-slate-800 select-none">
-      {/* TOP HEADER: CỐ ĐỊNH 100% Ở ĐỈNH, KHÔNG BỊ TRƯỢT KHI CUỘN NỘI DUNG */}
+      {/* TOP HEADER: CỐ ĐỊNH 100% Ở ĐỈNH */}
       {!isFullScreenLesson && (
         <header className="shrink-0 px-4 pt-3 pb-2.5 bg-slate-900/95 backdrop-blur z-30 border-b border-slate-800/90 shadow-md">
           <div className="flex items-center justify-between">
@@ -132,12 +138,12 @@ export const App: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
-                  Tiếng Trung Duolingo
+                  Tiếng Trung HSK
                   <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded-full font-mono border border-red-500/30">
                     Ải {unlockedLevel}/{CONVERSATION_LEVELS.length}
                   </span>
                 </h1>
-                <p className="text-[11px] text-slate-400">Lộ trình 25 câu tương tác/ải</p>
+                <p className="text-[11px] text-slate-400">HSK 1 • HSK 2 • HSK 3</p>
               </div>
             </div>
 
@@ -177,54 +183,76 @@ export const App: React.FC = () => {
             </div>
           )}
 
-          {/* Vocab/Writing quick picker bar */}
+          {/* HSK 1 - 2 - 3 Level Switcher Pill Bar (When in Vocab or Writing tab) */}
           {(currentTab === 'vocab' || currentTab === 'write') && (
-            <div className="mt-2.5 flex items-center justify-between bg-slate-950/60 p-1.5 rounded-2xl border border-slate-800">
-              <button
-                onClick={handlePrevWord}
-                className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition active:scale-95"
-                title="Từ trước"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 px-2">
-                {HSK1_VOCAB.map((w, idx) => {
-                  const isCurrent = idx === wordIndex;
-                  const isMastered = masteredWordIds.includes(w.id);
-
-                  return (
-                    <button
-                      key={w.id}
-                      onClick={() => setWordIndex(idx)}
-                      className={`px-2.5 py-1 rounded-xl text-xs font-chinese transition-all whitespace-nowrap flex items-center gap-1 ${
-                        isCurrent
-                          ? 'bg-red-600 text-white font-bold shadow-md shadow-red-600/30 scale-105'
-                          : isMastered
-                          ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-800/60'
-                          : 'bg-slate-800/70 text-slate-300 hover:bg-slate-800'
-                      }`}
-                    >
-                      {w.hanzi}
-                      {isMastered && <CheckCircle className="w-2.5 h-2.5 text-emerald-400" />}
-                    </button>
-                  );
-                })}
+            <div className="mt-2.5 space-y-2">
+              <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800">
+                {(['HSK 1', 'HSK 2', 'HSK 3'] as HskLevelType[]).map((lvl) => (
+                  <button
+                    key={lvl}
+                    onClick={() => {
+                      setSelectedHskLevel(lvl);
+                      setWordIndex(0);
+                    }}
+                    className={`py-1 rounded-lg text-xs font-bold transition ${
+                      selectedHskLevel === lvl
+                        ? 'bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {lvl}
+                  </button>
+                ))}
               </div>
 
-              <button
-                onClick={handleNextWord}
-                className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition active:scale-95"
-                title="Từ tiếp theo"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              {/* Vocab/Writing quick word picker bar */}
+              <div className="flex items-center justify-between bg-slate-950/60 p-1.5 rounded-2xl border border-slate-800">
+                <button
+                  onClick={handlePrevWord}
+                  className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition active:scale-95"
+                  title="Từ trước"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 px-2">
+                  {currentVocabList.map((w, idx) => {
+                    const isCurrent = idx === wordIndex;
+                    const isMastered = masteredWordIds.includes(w.id);
+
+                    return (
+                      <button
+                        key={w.id}
+                        onClick={() => setWordIndex(idx)}
+                        className={`px-2.5 py-1 rounded-xl text-xs font-chinese transition-all whitespace-nowrap flex items-center gap-1 ${
+                          isCurrent
+                            ? 'bg-red-600 text-white font-bold shadow-md shadow-red-600/30 scale-105'
+                            : isMastered
+                            ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-800/60'
+                            : 'bg-slate-800/70 text-slate-300 hover:bg-slate-800'
+                        }`}
+                      >
+                        {w.hanzi}
+                        {isMastered && <CheckCircle className="w-2.5 h-2.5 text-emerald-400" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={handleNextWord}
+                  className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition active:scale-95"
+                  title="Từ tiếp theo"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
         </header>
       )}
 
-      {/* KHU VỰC NỘI DUNG: CHỈ DUY NHẤT VÙNG NÀY ĐƯỢC PHÉP CUỘN (SCROLL) */}
+      {/* KHU VỰC NỘI DUNG: CHỈ DUY NHẤT VÙNG NÀY ĐƯỢC CUỘN */}
       <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden smooth-scroll px-4 py-3 flex flex-col">
         {/* Interactive Duolingo Lesson Mode */}
         {activeInteractiveLesson ? (
@@ -279,7 +307,7 @@ export const App: React.FC = () => {
 
             {currentTab === 'quiz' && (
               <QuizView
-                vocabList={HSK1_VOCAB}
+                vocabList={currentVocabList}
                 onScoreEarned={handleScoreEarned}
               />
             )}
@@ -287,7 +315,7 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* BOTTOM NAVIGATION BAR: CỐ ĐỊNH 100% Ở ĐÁY, KHÔNG BAO GIỜ BỊ CUỘN TRÔI */}
+      {/* BOTTOM NAVIGATION BAR (5 TABS): CỐ ĐỊNH 100% Ở ĐÁY */}
       {!isFullScreenLesson && (
         <nav className="shrink-0 bg-slate-900/98 backdrop-blur border-t border-slate-800/90 px-2 py-2 z-30 shadow-lg">
           <div className="grid grid-cols-5 gap-1">
