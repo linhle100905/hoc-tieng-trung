@@ -92,10 +92,10 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({
         })}
       </div>
 
-      {/* Level Selection Modal */}
+      {/* Level Selection Modal (Căn giữa 100% màn hình) */}
       {selectedPreview && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-fade-in relative">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-5">
+          <div className="bg-slate-900 border border-slate-700/80 rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-fade-in relative my-auto">
             <button
               onClick={() => setSelectedPreview(null)}
               className="absolute top-4 right-4 p-1.5 rounded-full bg-slate-800 text-slate-400 hover:text-white"
