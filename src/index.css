@@ -27,7 +27,7 @@
 }
 
 .safe-area-bottom {
-  padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+  padding-bottom: max(34px, env(safe-area-inset-bottom, 34px));
 }
 
 /* Smooth touch scrolling */

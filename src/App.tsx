@@ -314,10 +314,10 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* BOTTOM NAVIGATION BAR: NẰM AN TOÀN PHÍA TRÊN THANH HOME CỦA IPHONE */}
+      {/* BOTTOM NAVIGATION BAR: NẰM CAO HẲN LÊN PHÍA TRÊN THANH HOME CỦA IPHONE */}
       {!isFullScreenLesson && (
-        <nav className="shrink-0 bg-slate-900/98 backdrop-blur border-t border-slate-800/90 px-2 pt-2 safe-area-bottom z-30 shadow-lg">
-          <div className="grid grid-cols-5 gap-1">
+        <nav className="shrink-0 bg-slate-900/98 backdrop-blur border-t border-slate-800/90 px-2 pt-2.5 pb-[max(36px,env(safe-area-inset-bottom,36px))] z-30 shadow-2xl">
+          <div className="grid grid-cols-5 gap-1 items-center">
             <button
               onClick={() => setCurrentTab('roadmap')}
               className={`flex flex-col items-center py-1.5 rounded-2xl transition active:scale-95 ${
@@ -326,8 +326,8 @@ export const App: React.FC = () => {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Map className="w-4 h-4 mb-0.5" />
-              <span className="text-[10px]">Lộ trình</span>
+              <Map className="w-5 h-5 mb-1" />
+              <span className="text-[11px] leading-tight font-medium">Lộ trình</span>
             </button>
 
             <button
@@ -338,8 +338,8 @@ export const App: React.FC = () => {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Music className="w-4 h-4 mb-0.5" />
-              <span className="text-[10px]">Pinyin</span>
+              <Music className="w-5 h-5 mb-1" />
+              <span className="text-[11px] leading-tight font-medium">Pinyin</span>
             </button>
 
             <button
@@ -350,8 +350,8 @@ export const App: React.FC = () => {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <BookOpen className="w-4 h-4 mb-0.5" />
-              <span className="text-[10px]">Từ vựng</span>
+              <BookOpen className="w-5 h-5 mb-1" />
+              <span className="text-[11px] leading-tight font-medium">Từ vựng</span>
             </button>
 
             <button
@@ -362,8 +362,8 @@ export const App: React.FC = () => {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <PenTool className="w-4 h-4 mb-0.5" />
-              <span className="text-[10px]">Tập viết</span>
+              <PenTool className="w-5 h-5 mb-1" />
+              <span className="text-[11px] leading-tight font-medium">Tập viết</span>
             </button>
 
             <button
@@ -374,8 +374,8 @@ export const App: React.FC = () => {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Award className="w-4 h-4 mb-0.5" />
-              <span className="text-[10px]">Ôn tập</span>
+              <Award className="w-5 h-5 mb-1" />
+              <span className="text-[11px] leading-tight font-medium">Ôn tập</span>
             </button>
           </div>
         </nav>
